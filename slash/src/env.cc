@@ -234,7 +234,7 @@ int IsDir(const std::string& path) {
 
 int DeleteDir(const std::string& path)
 {
-  char chBuf[256];
+  char chBuf[512];
   DIR * dir = NULL;
   struct dirent *ptr;
   int ret = 0;
@@ -251,7 +251,7 @@ int DeleteDir(const std::string& path)
     if (0 == ret) {
       continue;
     }
-    snprintf(chBuf, 256, "%s/%s", path.c_str(), ptr->d_name);
+    snprintf(chBuf, sizeof(chBuf), "%s/%s", path.c_str(), ptr->d_name);
     ret = IsDir(chBuf);
     if (0 == ret) {
       //is dir
