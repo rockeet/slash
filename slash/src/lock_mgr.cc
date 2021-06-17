@@ -134,26 +134,26 @@ Status LockMgr::Acquire(LockMapStripe* stripe,
 Status LockMgr::AcquireLocked(LockMapStripe* stripe,
                               const std::string& key) {
   Status result;
-  // Check if this key is already locked
-  if (stripe->keys.find(key) != stripe->keys.end()) {
-    // Lock already held
-      result = Status::Busy("LockTimeout");
-  } else {  // Lock not held.
-    // Check lock limit
-    if (max_num_locks_ > 0 &&
-        lock_map_->lock_cnt.load(std::memory_order_acquire) >= max_num_locks_) {
+  // Check lock limit
+  if (max_num_locks_ > 0 &&
+      lock_map_->lock_cnt.load(std::memory_order_relaxed) >= max_num_locks_) {
+    if (stripe->keys.find(key) == stripe->keys.end())
       result = Status::Busy("LockLimit");
-    } else {
-      // acquire lock
-      stripe->keys.insert(key);
-
+    else
+      result = Status::Busy("LockTimeout");
+  }
+  else {
+    // Check if this key is already locked
+    if (!stripe->keys.insert(key).second) { // existed
+      // Lock already held
+        result = Status::Busy("LockTimeout");
+    } else {  // Lock not held.
       // Maintain lock count if there is a limit on the number of locks
       if (max_num_locks_) {
         lock_map_->lock_cnt++;
       }
     }
   }
-
   return result;
 }
 
