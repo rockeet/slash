@@ -22,7 +22,7 @@ namespace slash {
 namespace lock {
 
 struct LockMapStripe {
-  explicit LockMapStripe(std::shared_ptr<MutexFactory> factory) {
+  explicit LockMapStripe(const std::shared_ptr<MutexFactory>& factory) {
     stripe_mutex = factory->AllocateMutex();
     stripe_cv = factory->AllocateCondVar();
     assert(stripe_mutex);
@@ -42,7 +42,7 @@ struct LockMapStripe {
 // Map of #num_stripes LockMapStripes
 struct LockMap {
   explicit LockMap(size_t num_stripes,
-                   std::shared_ptr<MutexFactory> factory)
+                   const std::shared_ptr<MutexFactory>& factory)
       : num_stripes_(num_stripes) {
     lock_map_stripes_.reserve(num_stripes);
     for (size_t i = 0; i < num_stripes; i++) {
@@ -77,7 +77,7 @@ size_t LockMap::GetStripe(const std::string& key) const {
 
 LockMgr::LockMgr(size_t default_num_stripes,
                  int64_t max_num_locks,
-                 std::shared_ptr<MutexFactory> mutex_factory)
+                 const std::shared_ptr<MutexFactory>& mutex_factory)
     : default_num_stripes_(default_num_stripes),
       max_num_locks_(max_num_locks),
       mutex_factory_(mutex_factory),

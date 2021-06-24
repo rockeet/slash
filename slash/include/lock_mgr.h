@@ -20,7 +20,7 @@ struct LockMapStripe;
 class LockMgr {
  public:
   LockMgr(size_t default_num_stripes, int64_t max_num_locks,
-          std::shared_ptr<MutexFactory> factory);
+          const std::shared_ptr<MutexFactory>& factory);
 
   ~LockMgr();
 
