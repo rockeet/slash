@@ -50,7 +50,7 @@ int RenameFile(const std::string& oldname, const std::string& newname);
 class FileLock {
   public:
     FileLock() { }
-    virtual ~FileLock() {};
+    virtual ~FileLock() {}
 
     int fd_;
     std::string name_;
@@ -108,7 +108,7 @@ class WritableFile {
 // A abstract for the sequential readable file
 class SequentialFile {
  public:
-  SequentialFile() {};
+  SequentialFile() {}
   virtual ~SequentialFile();
   //virtual Status Read(size_t n, char *&result, char *scratch) = 0;
   virtual Status Read(size_t n, Slice* result, char* scratch) = 0;

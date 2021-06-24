@@ -40,8 +40,8 @@ class CondLock {
   pthread_mutex_t mutex_;
   pthread_cond_t cond_;
 
-  CondLock(const CondLock&) {};
-  void operator =(const CondLock&) {};
+  CondLock(const CondLock&) {}
+  void operator =(const CondLock&) {}
 };
 
 }  // namespace slash

@@ -166,7 +166,7 @@ class RefMutex {
 
 class RecordMutex {
 public:
-  RecordMutex() {};
+  RecordMutex() {}
   ~RecordMutex();
 
   void MultiLock(const std::vector<std::string>& keys);
