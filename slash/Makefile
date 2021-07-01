@@ -1,5 +1,4 @@
 CLEAN_FILES = # deliberately empty, so we can append below.
-CXX=g++
 LDFLAGS= -lpthread -lrt
 CXXFLAGS= -gdwarf -g3 -std=c++11 -fno-builtin-memcmp -msse -msse4.2 -pipe -fPIC
 PROFILING_FLAGS= -pg
