@@ -37,7 +37,7 @@ int BaseConf::LoadConf() {
   size_t sep_sign = 0;
   Rep::ConfType type = Rep::kConf;
 
-  while (line.getline(fp)) {
+  while (line.getline(fp) > 0) {
     sep_sign = 0;
     name_len = 0;
     value_len = 0;
