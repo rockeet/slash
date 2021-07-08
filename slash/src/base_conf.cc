@@ -12,9 +12,12 @@
 #include "slash/include/xdebug.h"
 #include "slash/include/slash_string.h"
 
+#include <terark/util/linebuf.hpp>
+#include <terark/util/autoclose.hpp>
+
 namespace slash {
 
-static const int kConfItemLen = 1024*1024;
+static const int kConfItemLen = 8*1024;
 
 BaseConf::BaseConf(const std::string &path)
   : rep_(new Rep(path)) {
@@ -25,28 +28,21 @@ BaseConf::~BaseConf() {
 }
 
 int BaseConf::LoadConf() {
-  if (!FileExists(rep_->path)) {
-    return -1;
-  }
-  SequentialFile *sequential_file;
-  NewSequentialFile(rep_->path, &sequential_file);
+  terark::Auto_close_fp fp(fopen(rep_->path.c_str(), "r"));
+  TERARK_VERIFY_S(nullptr != fp, "fopen(%s, r) = %m", rep_->path);
+  terark::LineBuf line;
 
-  // read conf items
-
-  char line[kConfItemLen];
   char name[kConfItemLen], value[kConfItemLen];
-  int line_len = 0;
-  int name_len = 0, value_len = 0;
-  int sep_sign = 0;
+  size_t name_len = 0, value_len = 0;
+  size_t sep_sign = 0;
   Rep::ConfType type = Rep::kConf;
 
-  while (sequential_file->ReadLine(line, kConfItemLen) != NULL) {
+  while (line.getline(fp)) {
     sep_sign = 0;
     name_len = 0;
     value_len = 0;
     type = Rep::kComment;
-    line_len = strlen(line);
-    for (int i = 0; i < line_len; i++) {
+    for (size_t i = 0; i < line.size(); i++) {
       if (i == 0 && line[i] == COMMENT) {
         type = Rep::kComment;
         break;
@@ -76,12 +72,10 @@ int BaseConf::LoadConf() {
     if (type == Rep::kConf) {
       rep_->item.push_back(Rep::ConfItem(Rep::kConf, std::string(name, name_len), std::string(value, value_len)));
     } else {
-      rep_->item.push_back(Rep::ConfItem(Rep::kComment, std::string(line, line_len)));
+      rep_->item.push_back(Rep::ConfItem(Rep::kComment, std::string(line.p, line.n)));
     }
   }
 
-  // sequential_file->Close();
-  delete sequential_file;
   return 0;
 }
 
