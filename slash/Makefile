@@ -4,6 +4,7 @@ CXXFLAGS += -gdwarf -g3 -std=c++11 -fno-builtin-memcmp -msse -msse4.2 -pipe -fPI
 PROFILING_FLAGS= -pg
 ARFLAGS = rs
 OPT=
+export SHELL := $(shell which bash)
 
 # Set the default DEBUG_LEVEL to 0
 DEBUG_LEVEL?=0
@@ -82,7 +83,7 @@ gen_build_version = sed -e s/@@GIT_SHA@@/$(git_sha)/ -e s/@@GIT_DATE_TIME@@/$(da
 # the version of the source that we used to build the executable file.
 CLEAN_FILES += src/build_version.cc
 
-FORCE: 
+FORCE:
 src/build_version.cc: FORCE
 	$(AM_V_GEN)rm -f $@-t
 	$(AM_V_at)$(gen_build_version) > $@-t
